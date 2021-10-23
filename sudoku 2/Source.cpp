@@ -5,64 +5,146 @@ void setConsoleColor(WORD c)
 {
 	SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), c);
 }
-void check(int arr[9][9], int r, int c, int value , int ans[9][9])
+int check(int arr[9][9])
 {
-	system("cls");
-	bool check_row = true;
-	for (size_t i = 0; i < 9; i++) // search in row so row is const and clumn change
+	bool checkRow = true, checkColumn = true, checkNet = true;
+	for (size_t i = 0; i < 9; i++)
 	{
-		if (value == arr[r - 1][i])
+		for (size_t j = 0; j < 9; j++)
 		{
-			check_row = false;
-			cout << "this number is exist in the same row !" << endl;
-
-		}
-	}
-	//////////
-	bool check_column = true;
-	for (size_t i = 0; i < 9; i++) // search in column so it is const and row change
-	{
-		if (value == arr[i][c - 1])
-		{
-			check_column = false;
-			cout << "wrong this number is exist in the same column !" << endl;
-
-		}
-	}
-	//////////
-	int N_r, N_c, n = 0, m = 0;
-	//2 steps to determine the Net that we will check
-
-	if (r - 1 < 3)  		//first to knew which row
-		N_r = 0;
-	else if (r - 1 < 6)
-		N_r = 3;
-	else
-		N_r = 6;
-
-	////////////////
-
-	if (c - 1 < 3)         //second to knew which column 
-		N_c = 0;
-	else if (c - 1 < 6)
-		N_c = 3;
-	else  
-		N_c = 6;
-	//cout << N_r << "   "<< N_c << endl;
-
-	for (size_t i = N_r; i < N_r + 3; i++)
-	{
-		for (size_t j = N_c; j < N_c + 3 ; j++)
-		{
-			if (value == arr[i][j])
+			for (size_t k = 1; k < 9 - j; k++)//check row
 			{
-				cout << "wrong this number is exist in the Same Net";
+				if (arr[i][j] == arr[i][k + j])
+				{
+					if (arr[i][j] < 0 || arr[i][k + j] < 0)
+						continue;
+					else
+					{
+						//cout << "Same row ! " << endl;
+						//cout << arr[i][j] << "*****" << arr[i][k + j] << "     ";
+						checkRow = false;
+					}
+
+				}
 			}
+			//cout << endl;
+			for (size_t k = 0; k < 8 - j; k++)//check column
+			{
+				if (arr[j][i] == arr[k + j + 1][i])
+				{
+					if (arr[j][i] < 0 || arr[k + j + 1][i] < 0)
+						continue;
+					else
+					{
+						//cout << arr[j][i] << "*****" << arr[k + j + 1][i] << "      ";
+						//cout << "same column ! " << endl;
+						checkColumn = false;
+					}
+
+				}
+			}
+			//cout << endl;
+
 		}
-		cout << endl;
 	}
+
+	if (checkRow == false)
+		cout << "wrong Row " << endl;
+	if (checkColumn == false)
+		cout << "wrong column " << endl;
+	if (checkNet == false)
+		cout << "wrong Net " << endl;
+	if (checkRow && checkColumn && checkNet)
+		return true;
 }
-void showSudoku(int arr[9][9] , bool a[9][9])
+bool Net(int arr[9][9])
+{
+	/*int I[9] = { 0,0,0,6,6,6,9,9,9 };
+	int* pI =I;
+	int J[9] = { 0,3,6,0,3,6,0,3,6 };
+	int* pJ = J;*/
+	int RC[9] = { 1,2,3,4,5,6,7,8,9 };
+	short n = 3, s = 0;
+	for (size_t i = 0; i < 9; i = i + 3)
+	{
+		for (size_t x = 0; x < 9; x++)
+		{
+			int sum = 0;
+			for (size_t z = 0; z < 3; z++)
+			{
+				s = 0, n = 3;
+				for (size_t j = s; j < 3 + s; j++)
+				{
+					//cout << RC[x] << "****" << arr[z + i][j] << " z = " << z << "     ";
+					if (RC[x] == arr[z + i][j] && arr[z + i][j] > 0 && arr[z + i][j] < 10)
+					{
+						sum++;
+						if (sum > 1)
+						{
+							//cout <<endl<< "Wrong Number , It is already exist in Same Net!";
+							return 0;
+						}
+					}
+					//cout << endl;
+				}
+			}
+			//cout << endl << "================================================" << endl;
+			s = s + 3;
+			n += 3;
+			sum = 0;
+			for (size_t z = 0; z < 3; z++)
+			{
+
+				for (size_t j = s; j < 3 + s; j++)
+				{
+					//cout << RC[x] << "****" << arr[z + i][j] << "   ";
+					if (RC[x] == arr[z + i][j] && arr[z + i][j] > 0 && arr[z + i][j] < 10)
+					{
+						sum++;
+						if (sum > 1)
+						{
+							//cout << "Wrong Number , It is already exist in Same Net!";
+							return 0;
+
+						}
+					}
+				}
+				//cout << endl;
+			}
+			//cout << endl << "================================================" << endl;
+
+			s = s + 3;
+			n += 3;
+			sum = 0;
+			for (size_t z = 0; z < 3; z++)
+			{
+
+				for (size_t j = s; j < 3 + s; j++)
+				{
+
+					//cout << RC[x] << "****" << arr[z + i][j] << "   ";
+					if (RC[x] == arr[z + i][j] && arr[z + i][j] > 0 && arr[z + i][j] < 10)
+					{
+
+						sum++;
+						if (sum > 1)
+						{
+							//cout << "Wrong Number , It is already exist in Same Net!";
+							return 0;
+						}
+					}
+				}
+				//cout << endl;
+			}
+			//cout << endl << endl;
+
+			//cout << endl << "================================================" << endl;
+
+		}
+	}
+	return true;
+}
+void showSudoku(int arr[9][9], bool a[9][9])
 {
 	cout << "_____    _____    _____";
 	cout << endl;
@@ -70,12 +152,12 @@ void showSudoku(int arr[9][9] , bool a[9][9])
 	{
 		for (size_t j = 0; j < 9; j++)
 		{
-			
+
 			if (j == 3 || j == 6)
 			{
 				cout << "|";
 			}
-			
+
 			if (arr[i][j] < 0)
 				cout << " " << "|";
 
@@ -92,7 +174,7 @@ void showSudoku(int arr[9][9] , bool a[9][9])
 
 			if (j == 2 || j == 5)
 				cout << "  ";
-			
+
 		}
 		cout << endl;
 		if (i == 2 || i == 5)
@@ -103,38 +185,29 @@ void showSudoku(int arr[9][9] , bool a[9][9])
 	}
 
 }
+
 void main()
 {
-	int arr[9][9];
 	bool a[9][9] = { false };
-	int ans[9][9] = { {3,8,7,4,9,1,6,2,5},{2,4,1,5,6,8,3,7,9},{5,6,9,3,2,7,4,1,8}
-	,{7,5,8,6,1,9,2,3,4},{1,2,3,7,8,4,5,9,6},{4,9,6,2,5,3,1,8,7}
-	,{9,3,4,1,7,6,8,5,2},{6,7,5,8,3,2,9,4,1},{8,1,2,9,4,5,7,6,3} };
-
-
-	arr[0][2] = 7, arr[0][3] = 4, arr[0][4] = 9, arr[0][5] = 1, arr[0][6] = 6, arr[0][8] = 5;     //first row
-	arr[1][0] = 2, arr[1][4] = 6, arr[1][6] = 3, arr[1][8] = 9; //second row
-	arr[2][5] = 7, arr[2][7] = 1; //third row	
-	arr[3][1] = 5, arr[3][2] = 8, arr[3][3] = 6, arr[3][8] = 4; //fourth row
-	arr[4][2] = 3, arr[4][7] = 9; //fifth row
-	arr[5][2] = 6, arr[5][3] = 2, arr[5][6] = 1, arr[5][7] = 8, arr[5][8] = 7; //sixth row
-	arr[6][0] = 9, arr[6][2] = 4, arr[6][4] = 7, arr[6][8] = 2; // seventh row
-	arr[7][0] = 6, arr[7][1] = 7, arr[7][3] = 8, arr[7][4] = 3; //eighth row
-	arr[8][0] = 8, arr[8][1] = 1, arr[8][4] = 4, arr[8][5] = 5; //ninth row
-
-	for (size_t i = 0; i < 9; i++) // to make this value const and cant be changed , i put true in a[9][9] for the correct value of arr [9][9]
-	{
-		for (size_t j = 0; j < 9; j++)
-		{
-			if (arr[i][j] > 0)
-				a[i][j] = true;
-		}
-	}
-
-	showSudoku(arr,a);
-
+	int arr[9][9];
+	arr[0][1] = 3, arr[0][2] = 5, arr[0][3] = 4, arr[0][4] = 8, arr[0][7] = 9, arr[0][8] = 2;
+	arr[1][2] = 7, arr[1][4] = 2, arr[1][7] = 6;
+	arr[2][0] = 2, arr[2][3] = 9, arr[2][6] = 7;
+	arr[3][1] = 4, arr[3][2] = 9, arr[3][5] = 8, arr[3][6] = 2;
+	arr[4][1] = 5, arr[4][4] = 4, arr[4][5] = 1, arr[4][7] = 7;
+	arr[5][2] = 1, arr[5][3] = 5, arr[5][6] = 8, arr[5][7] = 4;
+	arr[6][2] = 4, arr[6][5] = 9, arr[6][8] = 5;
+	arr[7][1] = 7, arr[7][4] = 1, arr[7][6] = 4;
+	arr[8][0] = 9, arr[8][1] = 2, arr[8][4] = 5, arr[8][5] = 4, arr[8][6] = 3, arr[8][7] = 1;
+	int m = 0, n = 0;
+	int num = 0;
+	bool checkRow = true, checkColumn = true, checkNet = true;
+	showSudoku(arr, a);
 	do
 	{
+		check(arr);
+		if (Net(arr) == false)
+			cout << "Wrong , Same Net " << endl;
 		int r, c, value;
 		bool check_const = true, check_end = true;
 		cout << endl << "enter row : ";
@@ -180,38 +253,31 @@ void main()
 
 		}
 
-		check(arr, r, c, value , ans); //check row , column and net
-
 		arr[r - 1][c - 1] = value;       //the value will be stored whether it is correct or wrong
 
-		showSudoku(arr, a);
 
-		bool check_final[9][9] = { false };
-		for (size_t i = 0; i < 9; i++) // check if the game is end or not 
-		{
-			for (size_t j = 0; j < 9; j++)
-			{
-				if (arr[i][j] == ans[i][j])
-				{
-					check_final[i][j] = true;;
-				}
-			}
+		////////////
 
-		}
+		bool busy = true;
 		for (size_t i = 0; i < 9; i++)
 		{
 			for (size_t j = 0; j < 9; j++)
 			{
-				if (check_final[i][j] == false)
-					check_end = false;
+				if (arr[i][j] < 0 || arr[i][j]>9)
+				{
+					busy = false;
+					break;
+				}
 			}
 		}
-
-		if (check_end == true)
+		if (busy)
 		{
-			cout << endl << endl;
-			cout << "congratulations D:";
-			break;    // condition to break do while when user enter all correct answer
+			if (check(arr) && Net(arr))
+			{
+				cout << " GG nice game " << endl << endl;
+				break;
+			}
 		}
+		showSudoku(arr, a);
 	} while (true);
 }
